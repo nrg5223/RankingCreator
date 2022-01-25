@@ -1,0 +1,6 @@
+Francis Ngannou,Striker
+Justin Gaethje,Striker
+Khabib Nurmagomedov,Grappler
+Kamaru Usman,Diverse
+Conor McGregor,Striker
+end
