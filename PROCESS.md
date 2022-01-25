@@ -42,3 +42,12 @@
 >> - Created:
 >>      - Data
 >>      - RankingsPTUIResults
+
+###1/25
+> 3 hours (as of 3:15)
+>>  - 3 hours coding
+> 
+> Tasks
+>>  - Refactored:
+>>      - RankingsPTUIHome (renamed commands, added functionality to create new files)
+>>      - Data (took file-related logic from RankingsPTUIHome)

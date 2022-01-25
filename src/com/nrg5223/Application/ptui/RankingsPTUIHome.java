@@ -36,16 +36,28 @@ public class RankingsPTUIHome implements Observer<Result, RankingsClientData> {
             if (command.length > 0) {
                 if (command[0].startsWith("q")) {
                     break;
+
                 } else if (command[0].startsWith("df")) {
                     Data.showFilesIn(Data.DATA_DIR);
+
+                } else if (command[0].startsWith("rf")) {
+                    Data.showFilesIn(Data.RESULTS_DIR);
+
                 } else if (command.length == 2 && command[0].startsWith("r")) {
-                    String fileToRead = Data.createDataFileName(command[1]);
-                    String fileToWriteTo = Data.createResultsFileName(command[1]);
-                    if (Data.dirContainsFile(Data.DATA_DIR, command[1])) {
-                        MakeRankings.main(new String[]{fileToRead, fileToWriteTo});
-                    } else {
-                        Data.showFilesIn(Data.DATA_DIR);
+                    try {
+                        String fileToRead = Data.createDataFileName(command[1]);
+                        String fileToWriteTo = Data.createResultsFileName(command[1]);
+                        if (Data.dirContainsFile(Data.DATA_DIR, command[1])) {
+                            MakeRankings.main(new String[]{fileToRead, fileToWriteTo});
+                        } else {
+                            Data.showFilesIn(Data.DATA_DIR);
+                        }
+                    } catch (NullPointerException e) {
+                        String message = "Unable to run voting operation. " +
+                                "Data file is empty.";
+                        System.out.println(message);
                     }
+
                 } else if (command.length == 2 && command[0].startsWith("n")) {
                     String newFileName = command[1];
                     if (Data.dirContainsFile(Data.DATA_DIR, newFileName)) {
@@ -55,12 +67,18 @@ public class RankingsPTUIHome implements Observer<Result, RankingsClientData> {
                     } else {
                         Data.createAndWriteNewFile(in, newFileName);
                     }
+
+                } else if (command.length == 2 && command[0].startsWith("a")) {
+                    if (!Data.dirContainsFile(Data.DATA_DIR, command[1])) {
+                        Data.showFilesIn(Data.DATA_DIR);
+                    } else {
+                        Data.addDataTo(in, command[1]);
+                    }
+
                 // TODO: need to refactor this and use RankingsPTUIResults
                 //  for all result-viewing functionality (this will get more
                 //  complicated in the future with data patterns and
                 //  filtering)
-                } else if (command[0].startsWith("rf")) {
-                    Data.showFilesIn(Data.RESULTS_DIR);
                 } else if (command.length == 2 && command[0].startsWith("v")) {
                     if (Data.dirContainsFile(Data.RESULTS_DIR, command[1])) {
                         String chosenResultsFile = Data.createResultsFileName(command[1]);
@@ -68,6 +86,12 @@ public class RankingsPTUIHome implements Observer<Result, RankingsClientData> {
                     } else {
                         Data.showFilesIn(Data.RESULTS_DIR);
                     }
+
+                // TODO: remove this section after testing delete().  It is
+                //  just here to test the function
+                } else if (command.length == 2 && command[0].startsWith("d")) {
+                    String fileToDelete = Data.createDataFileName(command[1]);
+                    Data.delete(command[1]);
                 } else {
                     displayHelp();
                 }
@@ -87,7 +111,7 @@ public class RankingsPTUIHome implements Observer<Result, RankingsClientData> {
         System.out.println("rf(iles)                   -- see the results files in the system" );
         System.out.println("r(ank) filename            -- rank the data in a file");
         System.out.println("n(ew) filename             -- write data to a new file");
-//        System.out.println("a(dd to) filename            -- add new items to a file");
+        System.out.println("a(dd to) filename          -- add new items to a file");
 //        System.out.println("d(elete from) filename       -- delete items from a file");
 //        System.out.println("u(pdate) filename            -- update rankings in a file");
         System.out.println("v(iew) filename            -- view the results in a file");

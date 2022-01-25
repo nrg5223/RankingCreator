@@ -29,11 +29,10 @@ public class MakeRankings {
 
             String fileWithRankables = args[0];
             Set<Rankable> Rankables = Data.getSetFromFile(fileWithRankables);
-            String rankableType = Data.getRankableTypeOf(fileWithRankables);
+            String rankableType = Data.getRankableTypeIn(fileWithRankables);
 
-            Comparer comparer = new Comparer(Rankables.toArray());
-            comparer.fillCombinationSet();
-            comparer.getUserVotes();
+            CombinationSet combinationSet = new CombinationSet(Rankables.toArray());
+            combinationSet.getUserVotesForAll();
 
             Result result = new Result(Rankables);
 

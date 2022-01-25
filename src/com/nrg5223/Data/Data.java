@@ -84,7 +84,9 @@ public class Data {
     }
 
     /**
-     * Get the content of the given file in the form of a string
+     * Get the content of the given file in the form of a string.  This excludes
+     * the first and last lines, which are the rankable type and "end",
+     * respectively
      *
      * @param fileName the name of a data file or a results file
      * @return the content of the file in the form of a string
@@ -166,8 +168,10 @@ public class Data {
      * @return the string representing the type of rankable stored in the file
      * @throws IOException if the file is not found
      */
-    public static String getRankableTypeOf(String fileName) throws IOException {
-        return (contentOf(fileName).split("\n"))[0];
+    public static String getRankableTypeIn(String fileName) throws IOException {
+        BufferedReader reader = new BufferedReader((new FileReader(fileName)));
+
+        return reader.readLine();
     }
 
     /**
@@ -184,11 +188,7 @@ public class Data {
         String rankableType = in.nextLine().split(" ")[0];
         writer.write(rankableType + "\n");
 
-        System.out.println("Enter data line by line.  Separate fields by comma.");
-        System.out.println("Example: ");
-        System.out.println("High For This,4:07,2012,false,Trilogy");
-        System.out.println("Enter 'end' to finish.");
-        System.out.println();
+        printInstructions();
 
         String line = in.nextLine();
         while (!line.equals("end")) {
@@ -200,5 +200,62 @@ public class Data {
         writer.close();
         String message = newFileName + " has been created.";
         System.out.println(message);
+    }
+
+    /**
+     * Get new input data from the user and add it to the given file
+     *
+     * @param in the scanner that reads input from the user
+     * @param fileName the name of the file to add to (excluding pre/suffixes)
+     * @throws IOException if the file is not found
+     */
+    public static void addDataTo(Scanner in, String fileName) throws IOException {
+        String fullFileName = Data.createDataFileName(fileName);
+        String existingContent = getRankableTypeIn(fullFileName) + "\n" +
+                                 contentOf(fullFileName);
+        delete(fileName);
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter(fullFileName));
+        writer.write(existingContent);
+
+        printInstructions();
+
+        String line = in.nextLine();
+        while (!line.equals("end")) {
+            writer.write(line + "\n");
+            System.out.println();
+            line = in.nextLine();
+        }
+        writer.write(line);
+        writer.close();
+        String message = fileName + " has been updated.";
+        System.out.println(message);
+    }
+
+    public static void delete(String fileName) {
+        // TODO: if (!isBackupFile(fileName)) { ... something like this
+
+        File directory = new File(Data.DATA_DIR);
+        File[] files = directory.listFiles();
+        assert files != null;
+        for (File f : files) {
+            String fName = f.getName();
+            fName = fName.substring(0, fName.length() - 4);
+            if (fName.equals(fileName)) {
+                f.delete();
+                break;
+            }
+        }
+    }
+
+    /**
+     * Print instructions for how to enter data to a data file
+     */
+    private static void printInstructions() {
+        System.out.println("Enter data line by line.  Separate fields by comma.");
+        System.out.println("Example: ");
+        System.out.println("High For This,4:07,2012,false,Trilogy");
+        System.out.println("Enter 'end' to finish.");
+        System.out.println();
     }
 }

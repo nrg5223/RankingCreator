@@ -22,6 +22,8 @@ opinion.
 > - Re-rank selected items in existing rankings
 > - Add new characteristics to existing lists of items 
 > - Adding items to tiers, ranking within those tiers, then ranking those tiers
+> - Automatically creating a backup file for each NEW file created.  The backup 
+>   folder will be written to, but never deleted (or overwritten, I think)
 
 
 ### PTUI Workflow Plan
@@ -55,6 +57,14 @@ opinion.
           rankings of the projects; rankings of song length ranges)
 >> - go to home screen
 >>      - to: home screen
+
+### Re-ranking plan
+>
+> 1. Add new items to data file
+> 2. Create new combination set (combos w/ new items)
+> 3. Get user votes for new combinations
+> 4. Write results to result file
+> 
 
 ### Known Bugs
 > None.
