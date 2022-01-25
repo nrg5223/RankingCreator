@@ -1,4 +1,4 @@
-package com.nrg5223.Application.Data.Objects.Utilities;
+package com.nrg5223.Data.Objects.Utilities;
 
 public class TimeConverter {
 

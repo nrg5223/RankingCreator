@@ -1,6 +1,6 @@
-package com.nrg5223.Application.Data.Objects.on_hold;
+package com.nrg5223.Data.Objects.on_hold;
 
-import com.nrg5223.Application.Data.Objects.Song;
+import com.nrg5223.Data.Objects.Song;
 
 import java.util.Arrays;
 import java.util.Set;

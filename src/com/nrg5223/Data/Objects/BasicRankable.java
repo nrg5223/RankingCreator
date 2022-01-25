@@ -1,4 +1,4 @@
-package com.nrg5223.Application.Data.Objects;
+package com.nrg5223.Data.Objects;
 
 /**
  * A basic extension of Rankable objects.  There is no additional data stored

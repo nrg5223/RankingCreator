@@ -1,6 +1,6 @@
-package com.nrg5223.Application.Data.Objects;
+package com.nrg5223.Data.Objects;
 
-import com.nrg5223.Application.Data.Objects.Utilities.TimeConverter;
+import com.nrg5223.Data.Objects.Utilities.TimeConverter;
 
 /**
  * An extension of Rankable that represents a song.  It currently stores this

@@ -1,11 +1,13 @@
 package com.nrg5223.Application.ptui;
 
-import com.nrg5223.Application.Data.Data;
+import com.nrg5223.Data.Data;
 import com.nrg5223.Application.Observer;
 import com.nrg5223.Application.gui.RankingsClientData;
 import com.nrg5223.RankingOperation.MakeRankings;
 import com.nrg5223.RankingOperation.Result;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -27,39 +29,49 @@ public class RankingsPTUIHome implements Observer<Result, RankingsClientData> {
         Scanner in = new Scanner( System.in );
         displayHelp();
         for ( ; ; ) {
+            System.out.println();
             System.out.print( "Application command: " );
             String line = in.nextLine();
             String[] command = line.split( "\\s+" );
             if (command.length > 0) {
                 if (command[0].startsWith("q")) {
                     break;
-                } else if (command[0].startsWith("r")) {
-                    if (command.length != 3) {
+                } else if (command[0].startsWith("df")) {
+                    Data.showFilesIn(Data.DATA_DIR);
+                } else if (command.length == 2 && command[0].startsWith("r")) {
+                    String fileToRead = Data.createDataFileName(command[1]);
+                    String fileToWriteTo = Data.createResultsFileName(command[1]);
+                    if (Data.dirContainsFile(Data.DATA_DIR, command[1])) {
+                        MakeRankings.main(new String[]{fileToRead, fileToWriteTo});
+                    } else {
                         Data.showFilesIn(Data.DATA_DIR);
                     }
-                    else {
-                        String fileToRead = Data.createDataFileName(command[1]);
-                        String fileToWriteTo = Data.createResultsFileName(command[1]);
-                        String rankableType = command[2];
-                        MakeRankings.main(new String[]{fileToRead, fileToWriteTo, rankableType});
+                } else if (command.length == 2 && command[0].startsWith("n")) {
+                    String newFileName = command[1];
+                    if (Data.dirContainsFile(Data.DATA_DIR, newFileName)) {
+                        String message = newFileName + " already exists in the " +
+                                "data directory.";
+                        System.out.println(message);
+                    } else {
+                        Data.createAndWriteNewFile(in, newFileName);
                     }
-                } else if (command[0].startsWith("v")) {
-                    // TODO: need to refactor this and use RankingsPTUIResults
-                    //  for all result-viewing functionality (this will get more
-                    //  complicated in the future with data patterns and
-                    //  filtering)
-                    if (command.length != 2) {
+                // TODO: need to refactor this and use RankingsPTUIResults
+                //  for all result-viewing functionality (this will get more
+                //  complicated in the future with data patterns and
+                //  filtering)
+                } else if (command[0].startsWith("rf")) {
+                    Data.showFilesIn(Data.RESULTS_DIR);
+                } else if (command.length == 2 && command[0].startsWith("v")) {
+                    if (Data.dirContainsFile(Data.RESULTS_DIR, command[1])) {
+                        String chosenResultsFile = Data.createResultsFileName(command[1]);
+                        System.out.println(Data.contentOf(chosenResultsFile));
+                    } else {
                         Data.showFilesIn(Data.RESULTS_DIR);
-                    }
-                    else {
-                        String fileToRead = Data.createResultsFileName(command[1]);
-                        System.out.println(Data.contentOf(fileToRead));
                     }
                 } else {
                     displayHelp();
                 }
-            }
-            else {
+            } else {
                 displayHelp();
             }
         }
@@ -70,14 +82,15 @@ public class RankingsPTUIHome implements Observer<Result, RankingsClientData> {
      * Display a message that shows the user the controls
      */
     private void displayHelp() {
-        System.out.println("q(uit)                      -- quit the application");
-        System.out.println("r(ank) filename item-type   -- rank the data in a file");
-//        System.out.println("w(rite) filename            -- write data to a new file");
-//        System.out.println("a(dd) filename              -- add new items to a file");
-//        System.out.println("d(elete) filename           -- delete items from a file");
-//        System.out.println("u(pdate) filename           -- update rankings in a file");
-        System.out.println("v(iew)                        -- view the results");
-        System.out.println();
+        System.out.println("q(uit)                     -- quit the application");
+        System.out.println("df(iles)                   -- see the data files in the system" );
+        System.out.println("rf(iles)                   -- see the results files in the system" );
+        System.out.println("r(ank) filename            -- rank the data in a file");
+        System.out.println("n(ew) filename             -- write data to a new file");
+//        System.out.println("a(dd to) filename            -- add new items to a file");
+//        System.out.println("d(elete from) filename       -- delete items from a file");
+//        System.out.println("u(pdate) filename            -- update rankings in a file");
+        System.out.println("v(iew) filename            -- view the results in a file");
     }
 
     @Override

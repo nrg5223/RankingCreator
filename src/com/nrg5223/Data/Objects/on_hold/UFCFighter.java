@@ -1,6 +1,6 @@
-package com.nrg5223.Application.Data.Objects.on_hold;
+package com.nrg5223.Data.Objects.on_hold;
 
-import com.nrg5223.Application.Data.Objects.Rankable;
+import com.nrg5223.Data.Objects.Rankable;
 
 /**
  * An extension of a Rankable that represents a UFC Fighter.  Additional data

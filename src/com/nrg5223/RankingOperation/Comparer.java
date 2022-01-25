@@ -1,6 +1,6 @@
 package com.nrg5223.RankingOperation;
 
-import com.nrg5223.Application.Data.Objects.Rankable;
+import com.nrg5223.Data.Objects.Rankable;
 
 import java.util.Arrays;
 import java.util.HashSet;

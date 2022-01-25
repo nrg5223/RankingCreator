@@ -1,4 +1,4 @@
-package com.nrg5223.Application.Data.Objects;
+package com.nrg5223.Data.Objects;
 
 /**
  * An object that can be ranked using the MakeRankings program

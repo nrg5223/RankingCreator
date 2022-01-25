@@ -1,7 +1,7 @@
 package com.nrg5223.RankingOperation;
 
-import com.nrg5223.Application.Data.Data;
-import com.nrg5223.Application.Data.Objects.*;
+import com.nrg5223.Data.Data;
+import com.nrg5223.Data.Objects.*;
 
 import java.io.*;
 import java.util.Set;
@@ -11,20 +11,6 @@ import java.util.Set;
  * of votes between every combination of two items from the set
  */
 public class MakeRankings {
-    /*
-    Requirements:
-    - 3+ categorized sets String songName (hardcoded)
-    - Write the songs to a file in the computer
-        - (research)
-    - PTUI - have not thought of functionality yet (workflow, etc)
-    - GUI ?
-        - see ranked (sorted) list of songs
-        - choose a song to move up in rankings (move up x spaces)
-        - see the 3+ groupings and move songs within those too
-        - be able to compare songs on the GUI
-            - (more thinking)
-    - don't know if this requirements list is complete
-    */
 
     /**
      * Create a sorted list to show the rankings based on user opinion of a set
@@ -35,13 +21,15 @@ public class MakeRankings {
      * @throws IOException if the file is not found
      */
     public static void main(String[] args) throws IOException {
-        if (args.length != 3) {
+        if (args.length != 2) {
             System.err.println("Usage: java MakeRankings input-file Type");
         }
         else {
             printBeginMessage();
 
-            Set<Rankable> Rankables = Data.getSetFromFile(args[0], args[2]);
+            String fileWithRankables = args[0];
+            Set<Rankable> Rankables = Data.getSetFromFile(fileWithRankables);
+            String rankableType = Data.getRankableTypeOf(fileWithRankables);
 
             Comparer comparer = new Comparer(Rankables.toArray());
             comparer.fillCombinationSet();
@@ -50,7 +38,10 @@ public class MakeRankings {
             Result result = new Result(Rankables);
 
             BufferedWriter writer = new BufferedWriter(new FileWriter(args[1]));
-            writer.write(result.toStringWithData() + "end");
+            writer.write(
+                    rankableType + "\n" +
+                    result.toStringWithData() +
+                    "end");
             writer.close();
 
             printEndMessage();
@@ -72,5 +63,4 @@ public class MakeRankings {
         System.out.println("Items have been ranked.");
         System.out.println();
     }
-
 }

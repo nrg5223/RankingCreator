@@ -1,13 +1,14 @@
-package com.nrg5223.Application.Data;
+package com.nrg5223.Data;
 
-import com.nrg5223.Application.Data.Objects.BasicRankable;
-import com.nrg5223.Application.Data.Objects.Rankable;
-import com.nrg5223.Application.Data.Objects.Song;
-import com.nrg5223.Application.Data.Objects.Utilities.TimeConverter;
-import com.nrg5223.Application.Data.Objects.on_hold.UFCFighter;
+import com.nrg5223.Data.Objects.BasicRankable;
+import com.nrg5223.Data.Objects.Rankable;
+import com.nrg5223.Data.Objects.Song;
+import com.nrg5223.Data.Objects.Utilities.TimeConverter;
+import com.nrg5223.Data.Objects.on_hold.UFCFighter;
 
 import java.io.*;
 import java.util.HashSet;
+import java.util.Scanner;
 import java.util.Set;
 
 /**
@@ -43,6 +44,24 @@ public class Data {
     }
 
     /**
+     * Does the data directory contain a file with the given file name
+     *
+     * @param fileName the name of the file to find
+     * @return true if the file named fileName exists; false otherwise
+     */
+    public static boolean dirContainsFile(String directoryPath, String fileName) {
+        File directory = new File(directoryPath);
+        File[] files = directory.listFiles();
+        assert files != null;
+        for (File f : files) {
+            String fName = f.getName();
+            fName = fName.substring(0, fName.length() - 4);
+            if (fName.equals(fileName)) return true;
+        }
+        return false;
+    }
+
+    /**
      * Create the full data file name by adding the directory prefix and the
      * file type suffix to the file name
      *
@@ -75,6 +94,7 @@ public class Data {
         BufferedReader reader = new BufferedReader((new FileReader(fileName)));
         StringBuilder str = new StringBuilder();
 
+        reader.readLine(); // skip the first line, which is the rankable type
         String currentLine = reader.readLine();
         while (!currentLine.equals("end")) {
             str.append(currentLine).append("\n");
@@ -87,15 +107,16 @@ public class Data {
      * Read in items from the text file with the item data, and store them in a
      * set
      *
-     * @param arg the main method argument, which is the text file with the item
+     * @param fileName the main method argument, which is the text file with the item
      *            data
      * @return the set of all items
      * @throws IOException if the file is not found
      */
-    public static Set<Rankable> getSetFromFile(String arg, String rankableType) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(arg));
+    public static Set<Rankable> getSetFromFile(String fileName) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(fileName));
         Set<Rankable> RankableSet = new HashSet<>();
 
+        String rankableType = reader.readLine();
         String currentLine = reader.readLine();
         while (!currentLine.equals("end")) {
             String[] rankableArgs = currentLine.split("[,]");
@@ -135,5 +156,49 @@ public class Data {
             throw new IllegalArgumentException("Object type must match exactly");
         }
         return rankable;
+    }
+
+    /**
+     * Get a string representing the type of rankable stored in the file
+     *
+     * @param fileName the name of a file with a list of rankables and their
+     *                 related data
+     * @return the string representing the type of rankable stored in the file
+     * @throws IOException if the file is not found
+     */
+    public static String getRankableTypeOf(String fileName) throws IOException {
+        return (contentOf(fileName).split("\n"))[0];
+    }
+
+    /**
+     * Create a new file, take user input for entries, and write the entries to
+     * the new file.
+     *
+     * @param in the scanner that gets the user input
+     * @param newFileName the name of the new file to write to
+     * @throws IOException if file is not found
+     */
+    public static void createAndWriteNewFile(Scanner in, String newFileName) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(Data.createDataFileName(newFileName)));
+        System.out.print("Enter Rankable Type: ");
+        String rankableType = in.nextLine().split(" ")[0];
+        writer.write(rankableType + "\n");
+
+        System.out.println("Enter data line by line.  Separate fields by comma.");
+        System.out.println("Example: ");
+        System.out.println("High For This,4:07,2012,false,Trilogy");
+        System.out.println("Enter 'end' to finish.");
+        System.out.println();
+
+        String line = in.nextLine();
+        while (!line.equals("end")) {
+            writer.write(line + "\n");
+            System.out.println();
+            line = in.nextLine();
+        }
+        writer.write(line);
+        writer.close();
+        String message = newFileName + " has been created.";
+        System.out.println(message);
     }
 }
