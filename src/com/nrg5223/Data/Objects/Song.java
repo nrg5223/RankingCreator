@@ -24,9 +24,10 @@ public class Song extends Rankable {
      * @param length length of the song in seconds
      * @param year release year of the song
      * @param isFeature whether the song is a feature
+     * @param isRanked whether this song has been ranked already
      */
-    public Song(String name, int length, int year, boolean isFeature, String project) {
-        super(name);
+    public Song(String name, int length, int year, boolean isFeature, String project, boolean isRanked) {
+        super(name, isRanked);
         this.lengthInSeconds = length;
         this.releaseYear = year;
         this.isFeature = isFeature;

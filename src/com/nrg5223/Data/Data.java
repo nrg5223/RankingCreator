@@ -122,13 +122,26 @@ public class Data {
         String currentLine = reader.readLine();
         while (!currentLine.equals("end")) {
             String[] rankableArgs = currentLine.split("[,]");
-            Rankable rankable = instantiateRankable(rankableType, rankableArgs);
-            RankableSet.add(rankable);
-
+            if (!itemIsRanked(rankableArgs.length - 1, rankableArgs)) {
+                Rankable rankable = instantiateRankable(rankableType, rankableArgs);
+                RankableSet.add(rankable);
+            }
             currentLine = reader.readLine();
         }
 
         return RankableSet;
+    }
+
+    /**
+     * Is the next rankable item unranked?
+     *
+     * @param i the index of rankableArgs containing the boolean unRanked
+     * @param rankableArgs the arguments parsed from the data file representing
+     *                     data about that line's rankable item
+     * @return true if unranked; false otherwise
+     */
+    private static boolean itemIsRanked(int i, String[] rankableArgs) {
+        return Boolean.parseBoolean(rankableArgs[i]);
     }
 
     /**
@@ -140,23 +153,23 @@ public class Data {
      * @return the instantiated extension of Rankable
      */
     private static Rankable instantiateRankable(String type, String[] rankableArgs) {
-        Rankable rankable;
-        if (type.equals("Song")) {
-            rankable = new Song(rankableArgs[0],
+        Rankable rankable = switch (type) {
+            case "Song" -> new Song(
+                    rankableArgs[0],
                     TimeConverter.toSeconds(rankableArgs[1]),
                     Integer.parseInt(rankableArgs[2]),
                     Boolean.parseBoolean(rankableArgs[3]),
-                    rankableArgs[4]);
-        }
-        else if (type.equals("UFCFighter")) {
-            rankable = new UFCFighter(rankableArgs[0], rankableArgs[1]);
-        }
-        else if (type.equals("Basic")) {
-            rankable = new BasicRankable(rankableArgs[0]);
-        }
-        else {
-            throw new IllegalArgumentException("Object type must match exactly");
-        }
+                    rankableArgs[4],
+                    Boolean.parseBoolean(rankableArgs[5]));
+            case "UFCFighter" -> new UFCFighter(
+                    rankableArgs[0],
+                    rankableArgs[1],
+                    Boolean.parseBoolean(rankableArgs[2]));
+            case "Basic" -> new BasicRankable(
+                    rankableArgs[0],
+                    Boolean.parseBoolean(rankableArgs[1]));
+            default -> throw new IllegalArgumentException("Object type must match exactly");
+        };
         return rankable;
     }
 
@@ -189,17 +202,38 @@ public class Data {
         writer.write(rankableType + "\n");
 
         printInstructions();
-
         String line = in.nextLine();
         while (!line.equals("end")) {
-            writer.write(line + "\n");
+            writer.write(line + ",false" + "\n"); // isRanked
             System.out.println();
             line = in.nextLine();
         }
         writer.write(line);
         writer.close();
+
         String message = newFileName + " has been created.";
         System.out.println(message);
+    }
+
+    // TODO: this code is reused in createAndWriteNewFile and addDataTo, but it
+    //    does not work when implemented as a method
+    /**
+     * Get input from the user.  The during this operation, the user enters data
+     * line by line, via System.in, to be stored in a data file
+     *
+     * @param in the scanner which reads the user input
+     * @param writer the writer which write the user's input to a file
+     * @throws IOException if the file is not found
+     */
+    private static void getUserInput(Scanner in, BufferedWriter writer) throws IOException {
+        printInstructions();
+        String line = in.nextLine();
+        while (!line.equals("end")) {
+            writer.write(line + ",false" + "\n"); // isRanked
+            System.out.println();
+            line = in.nextLine();
+        }
+        writer.write(line);
     }
 
     /**
@@ -213,27 +247,78 @@ public class Data {
         String fullFileName = Data.createDataFileName(fileName);
         String existingContent = getRankableTypeIn(fullFileName) + "\n" +
                                  contentOf(fullFileName);
-        delete(fileName);
+        deleteDataFile(fullFileName);
 
         BufferedWriter writer = new BufferedWriter(new FileWriter(fullFileName));
         writer.write(existingContent);
 
         printInstructions();
-
         String line = in.nextLine();
         while (!line.equals("end")) {
-            writer.write(line + "\n");
+            writer.write(line + ",false" + "\n"); // isRanked
             System.out.println();
             line = in.nextLine();
         }
         writer.write(line);
         writer.close();
+
         String message = fileName + " has been updated.";
         System.out.println(message);
     }
 
-    public static void delete(String fileName) {
+    public static void rewriteFileAfterVoting(String fullFileName) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(fullFileName));
+
+        StringBuilder newContent = new StringBuilder();
+        String rankableType = reader.readLine();
+        newContent.append(rankableType);
+
+        String currentLine = reader.readLine();
+        while (!currentLine.equals("end")) {
+            String updatedLine = updateIsRankedOnLine(currentLine);
+            newContent.append(updatedLine).append("\n");
+
+            currentLine = reader.readLine();
+        }
+        newContent.append("end");
+
+        deleteDataFile(fullFileName);
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter(fullFileName));
+        writer.write(newContent.toString());
+        writer.close();
+    }
+
+    /**
+     * Change the last argument on the line to "true" whether it is false or
+     * true. The purpose of this method is to rewrite data files to reflect
+     * when they have been used to make rankings; hence isRanked becomes true
+     *
+     * @param currentLine a line in a data file
+     * @return the line with the last argument updated to "true"
+     */
+    private static String updateIsRankedOnLine(String currentLine) {
+        String[] rankableArgs = currentLine.split("[,]");
+        int lastIndex = rankableArgs.length - 1;
+        rankableArgs[lastIndex] = "true";
+        StringBuilder updatedRankableArgs = new StringBuilder();
+        for (int i = 0; i < lastIndex; i++) {
+            updatedRankableArgs.append(rankableArgs[i]).append(",");
+        }
+        updatedRankableArgs.append(rankableArgs[lastIndex]);
+        return updatedRankableArgs.toString();
+    }
+
+    /**
+     * Delete the file from the system
+     *
+     * @param fileName the name of the file to be deleted,
+     *                 excluding pre/suffixes
+     */
+    public static void deleteDataFile(String fileName) {
         // TODO: if (!isBackupFile(fileName)) { ... something like this
+
+        fileName = cutPreSuffixesOffFile(fileName);
 
         File directory = new File(Data.DATA_DIR);
         File[] files = directory.listFiles();
@@ -246,6 +331,26 @@ public class Data {
                 break;
             }
         }
+    }
+
+    /**
+     * Get the given filename excluding pre/suffixes
+     *
+     * @param fileName the name of a file including the pre/suffixes
+     * @return the updated filename
+     */
+    private static String cutPreSuffixesOffFile(String fileName) {
+        int prefixLength = 0;
+        if (fileName.startsWith("data/")) {
+            prefixLength = "data/".length();
+        }
+        if (fileName.startsWith("results/")) {
+            prefixLength = "results/".length();
+        }
+        int suffixLength = ".txt".length();
+        int fileNameLength = fileName.length();
+
+        return fileName.substring(prefixLength, fileNameLength - suffixLength);
     }
 
     /**

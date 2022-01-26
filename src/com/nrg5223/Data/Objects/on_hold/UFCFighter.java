@@ -11,8 +11,8 @@ public class UFCFighter extends Rankable {
     /** The fighter's primary style of fighting */
     private final String style;
 
-    public UFCFighter(String name, String style) {
-        super(name);
+    public UFCFighter(String name, String style, boolean isRanked) {
+        super(name, isRanked);
         this.style = style;
     }
 }

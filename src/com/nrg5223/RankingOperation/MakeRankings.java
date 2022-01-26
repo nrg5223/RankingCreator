@@ -16,8 +16,9 @@ public class MakeRankings {
      * Create a sorted list to show the rankings based on user opinion of a set
      * of items
      *
-     * @param args the name of the text file containing the data on the items to
-     *             rank
+     * @param args a native array of size 2 with strings.  The first element
+     *             is the name of the data file to read, the second element
+     *             is the name of the results file to write to.
      * @throws IOException if the file is not found
      */
     public static void main(String[] args) throws IOException {
@@ -27,21 +28,24 @@ public class MakeRankings {
         else {
             printBeginMessage();
 
-            String fileWithRankables = args[0];
-            Set<Rankable> Rankables = Data.getSetFromFile(fileWithRankables);
-            String rankableType = Data.getRankableTypeIn(fileWithRankables);
+            String dataFile = args[0];
+            String resultsFile = args[1];
+            Set<Rankable> Rankables = Data.getSetFromFile(dataFile);
+            String rankableType = Data.getRankableTypeIn(dataFile);
 
             CombinationSet combinationSet = new CombinationSet(Rankables.toArray());
             combinationSet.getUserVotesForAll();
 
             Result result = new Result(Rankables);
 
-            BufferedWriter writer = new BufferedWriter(new FileWriter(args[1]));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(resultsFile));
             writer.write(
                     rankableType + "\n" +
                     result.toStringWithData() +
                     "end");
             writer.close();
+
+            Data.rewriteFileAfterVoting(dataFile);
 
             printEndMessage();
         }

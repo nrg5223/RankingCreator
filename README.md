@@ -60,6 +60,15 @@ opinion.
 
 ### Re-ranking plan
 >
+> New Idea:
+>> Adding boolean field wasRanked allows you to take breaks
+>> between voting sessions, and continue later.  It's more complicated
+>> that just adding the one field, but it's the right idea. This MAY result
+>> in not needing the results files.  The data needed to output the 
+>> results could all be stored in the data file, but I'll see how it goes.
+> 
+> Previous Plan:
+> 
 > 1. Add new items to data file
 > 2. Create new combination set (combos w/ new items)
 > 3. Get user votes for new combinations

@@ -6,7 +6,7 @@ package com.nrg5223.Data.Objects;
  */
 public class BasicRankable extends Rankable {
 
-    public BasicRankable(String name) {
-        super(name);
+    public BasicRankable(String name, boolean isUnranked) {
+        super(name, isUnranked);
     }
 }

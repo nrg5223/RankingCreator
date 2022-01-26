@@ -8,9 +8,12 @@ public abstract class Rankable implements Comparable {
     int points = 0;
     /** This Rankable's name, which is shown to the user for comparisons */
     String name;
+    /** Has this rankable been ranked already? */
+    boolean isRanked;
 
-    public Rankable(String name) {
+    public Rankable(String name, Boolean isRanked) {
         this.name = name;
+        this.isRanked = isRanked;
     }
 
     /**
@@ -20,14 +23,13 @@ public abstract class Rankable implements Comparable {
         points++;
     };
 
-    /**
-     * Get this Rankable's number of points
-     *
-     * @return points
-     */
     public int points() {
         return points;
     };
+
+    public Boolean isRanked() {
+        return isRanked;
+    }
 
     /**
      * Create a string representation of this Rankable that includes all

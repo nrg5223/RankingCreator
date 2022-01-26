@@ -45,7 +45,8 @@
 
 ###1/25
 > 3 hours (as of 3:15)
->>  - 3 hours coding
+>>  - 4 hours coding
+>>  - 2 hours refactoring
 > 
 > Tasks
 >>  - Refactored:

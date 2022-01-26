@@ -13,18 +13,23 @@ import java.util.Scanner;
 
 public class RankingsPTUIHome implements Observer<Result, RankingsClientData> {
 
-    /*
-        Idea: have a main() method for each of the three "pages" in the
-        application
-            - HomePTUI (may come from this class or MakeRankings)
-            - RankingPTUI (may come from comparer)
-            - ResultsPTUI (may come from Result)
+
+    /**
+     * Create a ptui object for the ranking creator application and run it
+     *
+     * @param args the string arguments for a run configuration
+     * @throws IOException if file is not found
      */
     public static void main(String[] args) throws IOException {
         RankingsPTUIHome ptui = new RankingsPTUIHome();
         ptui.run();
     }
 
+    /**
+     * Run the ptui for the ranking creator application
+     *
+     * @throws IOException if a file is not found
+     */
     private void run() throws IOException {
         Scanner in = new Scanner( System.in );
         displayHelp();
@@ -73,13 +78,23 @@ public class RankingsPTUIHome implements Observer<Result, RankingsClientData> {
                         Data.showFilesIn(Data.DATA_DIR);
                     } else {
                         Data.addDataTo(in, command[1]);
+                        String fileToRead = Data.createDataFileName(command[1]);
+                        String fileToWriteTo = Data.createResultsFileName(command[1]);
+                        MakeRankings.main(new String[] {fileToRead, fileToWriteTo});
                     }
 
                 // TODO: need to refactor this and use RankingsPTUIResults
                 //  for all result-viewing functionality (this will get more
                 //  complicated in the future with data patterns and
                 //  filtering)
-                } else if (command.length == 2 && command[0].startsWith("v")) {
+                } else if (command.length == 2 && command[0].startsWith("vd")) {
+                    if (Data.dirContainsFile(Data.DATA_DIR, command[1])) {
+                        String chosenResultsFile = Data.createDataFileName(command[1]);
+                        System.out.println(Data.contentOf(chosenResultsFile));
+                    } else {
+                        Data.showFilesIn(Data.DATA_DIR);
+                    }
+                } else if (command.length == 2 && command[0].startsWith("vr")) {
                     if (Data.dirContainsFile(Data.RESULTS_DIR, command[1])) {
                         String chosenResultsFile = Data.createResultsFileName(command[1]);
                         System.out.println(Data.contentOf(chosenResultsFile));
@@ -87,11 +102,6 @@ public class RankingsPTUIHome implements Observer<Result, RankingsClientData> {
                         Data.showFilesIn(Data.RESULTS_DIR);
                     }
 
-                // TODO: remove this section after testing delete().  It is
-                //  just here to test the function
-                } else if (command.length == 2 && command[0].startsWith("d")) {
-                    String fileToDelete = Data.createDataFileName(command[1]);
-                    Data.delete(command[1]);
                 } else {
                     displayHelp();
                 }
@@ -114,7 +124,8 @@ public class RankingsPTUIHome implements Observer<Result, RankingsClientData> {
         System.out.println("a(dd to) filename          -- add new items to a file");
 //        System.out.println("d(elete from) filename       -- delete items from a file");
 //        System.out.println("u(pdate) filename            -- update rankings in a file");
-        System.out.println("v(iew) filename            -- view the results in a file");
+        System.out.println("vd (view data) filename    -- view the results in a file");
+        System.out.println("vr (view result) filename  -- view the results in a file");
     }
 
     @Override
