@@ -24,6 +24,16 @@ public class Result {
         sortedListShowingTies = sortedListShowingTies();
     }
 
+    public int getPointsOf(String rankable) {
+        // TODO: don't know what to do if the rankable is not found
+        for (Rankable r : sortedList) {
+            if (r.toString().equals(rankable)) {
+                return r.points();
+            }
+        }
+        return 0;
+    }
+
     /**
      * If not already done, create a sorted list of the rankables based on their
      * point scores.  Return the list
@@ -126,13 +136,14 @@ public class Result {
 
             for (Rankable r : rankableArr) {
                 str.append(r.toStringWithData()).append(",");
-                str.append(r.points()).append(",");
                 if (rankableArr.length > 1) {
-                    str.append("true");
+                    str.append("true").append(",");
                 }
                 else {
-                    str.append("false");
+                    str.append("false").append(",");
                 }
+                str.append(r.points()).append(",");
+                str.append("true"); // isRanked
                 str.append("\n");
             }
         }

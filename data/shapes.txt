@@ -1,0 +1,4 @@
+Basiccircle,2,true
+square,0,true
+triangle,1,true
+end

@@ -1,0 +1,5 @@
+Basic
+circle,2,false
+triangle,1,false
+square,0,false
+end

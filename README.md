@@ -76,6 +76,7 @@ opinion.
 > 
 
 ### Known Bugs
-> None.
+> - File content seems to be cleared after the application closes. (Has not been
+>   heavily tested)
 >
-> Last checked on: 1/23/2022
+> Last updated on: 1/26/2022

@@ -1,0 +1,7 @@
+UFCFighter
+Francis Ngannou,4,false
+Justin Gaethje,3,false
+Kamaru Usman,2,false
+Conor McGregor,1,false
+Khabib Nurmagomedov,0,false
+end

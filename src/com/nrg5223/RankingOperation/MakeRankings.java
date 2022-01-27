@@ -38,14 +38,18 @@ public class MakeRankings {
 
             Result result = new Result(Rankables);
 
-            BufferedWriter writer = new BufferedWriter(new FileWriter(resultsFile));
-            writer.write(
-                    rankableType + "\n" +
-                    result.toStringWithData() +
-                    "end");
-            writer.close();
+            // TODO: This writes the result to a result file.  It may not be needed
+//            BufferedWriter writer = new BufferedWriter(new FileWriter(resultsFile));
+//            writer.write(
+//                    rankableType + "\n" +
+//                    result.toStringWithData() +
+//                    "end");
+//            writer.close();
+            // TODO: this idea was never fully implemented.  I'm keeping it here
+            //  for reference and in case I end up using it
+//            Data.rewriteFileAfterVoting(dataFile, result);
 
-            Data.rewriteFileAfterVoting(dataFile);
+            Data.rewriteDataFile(dataFile, result);
 
             printEndMessage();
         }

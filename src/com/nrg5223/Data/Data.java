@@ -5,6 +5,7 @@ import com.nrg5223.Data.Objects.Rankable;
 import com.nrg5223.Data.Objects.Song;
 import com.nrg5223.Data.Objects.Utilities.TimeConverter;
 import com.nrg5223.Data.Objects.on_hold.UFCFighter;
+import com.nrg5223.RankingOperation.Result;
 
 import java.io.*;
 import java.util.HashSet;
@@ -266,7 +267,7 @@ public class Data {
         System.out.println(message);
     }
 
-    public static void rewriteFileAfterVoting(String fullFileName) throws IOException {
+    public static void rewriteFileAfterVoting(String fullFileName, Result result) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(fullFileName));
 
         StringBuilder newContent = new StringBuilder();
@@ -275,7 +276,7 @@ public class Data {
 
         String currentLine = reader.readLine();
         while (!currentLine.equals("end")) {
-            String updatedLine = updateIsRankedOnLine(currentLine);
+            String updatedLine = lineShowingResults(currentLine, result);
             newContent.append(updatedLine).append("\n");
 
             currentLine = reader.readLine();
@@ -289,6 +290,32 @@ public class Data {
         writer.close();
     }
 
+    public static void rewriteDataFile(String fullFileName, Result result) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(fullFileName));
+
+        String rankableType = reader.readLine();
+
+        String newContent = rankableType + "\n" +
+                        result.toStringWithData() +
+                        "end";
+
+        deleteDataFile(fullFileName);
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter(fullFileName));
+        writer.write(newContent);
+        writer.close();
+    }
+
+    /**
+     * Get the first field in the line, which is the name of the item
+     *
+     * @param line a line of data from a data file
+     * @return the name of the item on that line
+     */
+    private static String getItemName(String line) {
+        return line.split("[,]")[0];
+    }
+
     /**
      * Change the last argument on the line to "true" whether it is false or
      * true. The purpose of this method is to rewrite data files to reflect
@@ -297,13 +324,13 @@ public class Data {
      * @param currentLine a line in a data file
      * @return the line with the last argument updated to "true"
      */
-    private static String updateIsRankedOnLine(String currentLine) {
+    private static String lineShowingResults(String currentLine, Result result) {
         String[] rankableArgs = currentLine.split("[,]");
         int lastIndex = rankableArgs.length - 1;
         rankableArgs[lastIndex] = "true";
         StringBuilder updatedRankableArgs = new StringBuilder();
         for (int i = 0; i < lastIndex; i++) {
-            updatedRankableArgs.append(rankableArgs[i]).append(",");
+            updatedRankableArgs.append(rankableArgs[i]).append(",").append(result.getPointsOf(rankableArgs[0])).append(",");
         }
         updatedRankableArgs.append(rankableArgs[lastIndex]);
         return updatedRankableArgs.toString();
@@ -334,7 +361,8 @@ public class Data {
     }
 
     /**
-     * Get the given filename excluding pre/suffixes
+     * Get the given filename excluding pre/suffixes.  If there are already no
+     * pre/suffixes, return the original filename
      *
      * @param fileName the name of a file including the pre/suffixes
      * @return the updated filename

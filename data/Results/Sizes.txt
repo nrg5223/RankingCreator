@@ -1,0 +1,7 @@
+Basic
+s,4,false
+m,3,false
+l,2,false
+xl,1,false
+extra large,0,false
+end

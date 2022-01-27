@@ -1,0 +1,9 @@
+Basic
+White,6,false
+Red,5,false
+Green,4,false
+Purple,3,false
+Yellow,2,false
+Orange,1,false
+Blue,0,false
+end
